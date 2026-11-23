@@ -1,0 +1,106 @@
+### Gamma Shop API - walkthrough for IntelliJ's HTTP client (or copy into Postman)
+### Run the app first, then execute these top to bottom.
+### Replace PASTE_..._HERE values with data from previous responses.
+
+### 1. Login as the demo customer
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{"email": "customer@gammashop.local", "password": "Customer123!"}
+
+### 2. Browse products (public, no token needed)
+GET http://localhost:8080/api/products
+
+### 3. Add product 1 to the cart (paste accessToken from step 1)
+POST http://localhost:8080/api/cart/items
+Content-Type: application/json
+Authorization: Bearer PASTE_CUSTOMER_TOKEN_HERE
+
+{"productId": 1, "quantity": 2}
+
+### 4. Preview totals with the sample promotion
+POST http://localhost:8080/api/orders/preview
+Content-Type: application/json
+Authorization: Bearer PASTE_CUSTOMER_TOKEN_HERE
+
+{"promotionCode": "WELCOME10"}
+
+### 5. Checkout -> note the order "id" in the response
+POST http://localhost:8080/api/orders
+Content-Type: application/json
+Authorization: Bearer PASTE_CUSTOMER_TOKEN_HERE
+
+{"promotionCode": "WELCOME10"}
+
+### 6. Create a payment intent for the order -> note "intentId"
+POST http://localhost:8080/api/payments/intent/1
+Authorization: Bearer PASTE_CUSTOMER_TOKEN_HERE
+
+### 7. Simulate a successful payment at the mock gateway (no token needed)
+POST http://localhost:8080/api/mock-gateway/pay/PASTE_INTENT_ID_HERE/complete?outcome=success
+
+### 8. Confirm the order is PAID
+GET http://localhost:8080/api/orders/1
+Authorization: Bearer PASTE_CUSTOMER_TOKEN_HERE
+
+### 9. Login as staff for the middle office
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{"email": "staff@gammashop.local", "password": "Staff123!"}
+
+### 10. View orders waiting to be processed
+GET http://localhost:8080/api/admin/orders/pending
+Authorization: Bearer PASTE_STAFF_TOKEN_HERE
+
+### 11. Move the order through fulfilment
+POST http://localhost:8080/api/admin/orders/1/status
+Content-Type: application/json
+Authorization: Bearer PASTE_STAFF_TOKEN_HERE
+
+{"status": "PROCESSING"}
+
+### 12. Mark packed, then shipped, then completed
+POST http://localhost:8080/api/admin/orders/1/packed
+Authorization: Bearer PASTE_STAFF_TOKEN_HERE
+
+### 13. Download the invoice PDF
+GET http://localhost:8080/api/admin/orders/1/invoice
+Authorization: Bearer PASTE_STAFF_TOKEN_HERE
+
+### 14. Login as admin for reports
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{"email": "admin@gammashop.local", "password": "Admin123!"}
+
+### 15. Daily sales report (also try format=csv or format=pdf)
+GET http://localhost:8080/api/admin/reports/sales/daily?start=2026-07-01&end=2026-07-31
+Authorization: Bearer PASTE_ADMIN_TOKEN_HERE
+
+### 16. Order audit trail
+GET http://localhost:8080/api/admin/audit/orders/1
+Authorization: Bearer PASTE_ADMIN_TOKEN_HERE
+
+### --- Guest flow ---
+
+### 17. Create a guest session -> note "guestToken"
+POST http://localhost:8080/api/auth/guest
+
+### 18. Guest adds to cart (no login, only the header)
+POST http://localhost:8080/api/cart/items
+Content-Type: application/json
+X-Guest-Token: PASTE_GUEST_TOKEN_HERE
+
+{"productId": 2, "quantity": 1}
+
+### 19. Guest converts to a real account (cart is merged automatically)
+POST http://localhost:8080/api/auth/guest/convert
+Content-Type: application/json
+
+{
+  "guestToken": "PASTE_GUEST_TOKEN_HERE",
+  "email": "newuser@example.com",
+  "password": "NewUser123!",
+  "fullName": "New User"
+}

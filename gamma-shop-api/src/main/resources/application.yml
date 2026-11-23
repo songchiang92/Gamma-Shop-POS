@@ -1,0 +1,54 @@
+spring:
+  datasource:
+    # CHANGE the password below to your own MySQL root password
+    url: jdbc:mysql://localhost:3306/gamma_shop?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: root
+    password: localdev123
+  jpa:
+    hibernate:
+      ddl-auto: none          # tables are created by sql/schema.sql, not by Hibernate
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 10MB
+  # Only needed if you set app.mail.enabled=true below:
+  # mail:
+  #   host: smtp.gmail.com
+  #   port: 587
+  #   username: your@gmail.com
+  #   password: app-password
+  #   properties:
+  #     mail.smtp.auth: true
+  #     mail.smtp.starttls.enable: true
+
+server:
+  port: 8080
+
+app:
+  jwt:
+    # Base64-encoded signing key for JWT access tokens. Replace with your own for production.
+    secret: r0YKMzzN61JCppbGAOIjSjbjMTGj0KyTnT1IyNuqma5GaHHlM/QHLxiovGQjueEMyxf9tfD8x3BTSM+UutghXw==
+    access-token-minutes: 30
+    refresh-token-days: 7
+  payment:
+    webhook-secret: change-this-webhook-secret   # shared secret used to sign gateway callbacks
+    gateway-base-url: http://localhost:8080/api/mock-gateway
+    timeout-minutes: 30                          # payments pending longer than this are marked TIMEOUT
+    currency: MYR
+  reservation:
+    expiry-minutes: 30                           # how long stock stays reserved for an unpaid order
+  uploads:
+    dir: D:/Gamma Shop/Gamma Shop/gamma-shop-api/uploads   # absolute path - relative paths can fail to resolve depending on the run's working directory
+  mail:
+    enabled: false                               # false = notifications are saved to DB + logged only
+    from: no-reply@gammashop.local
+  seed:
+    enabled: true                                # creates admin/staff/customer demo users on first start
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html

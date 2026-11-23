@@ -1,0 +1,26 @@
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Dependencies / build output
+node_modules/
+target/
+dist/
+dist-ssr/
+
+# Test artifacts
+test-results/
+playwright-report/
+blob-report/
+screenshots/
+
+# Runtime uploads
+uploads/
+
+# Misc
+*.log
+.DS_Store
+.env
+.env.*
+*.local
